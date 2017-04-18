@@ -10,10 +10,14 @@
 
 import React, { PropTypes } from 'react';
 import history from '../../src/history';
+import AuthService from '../../src/utils/authService';
+
+const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
 
 class Link extends React.Component {
 
   static propTypes = {
+    checkAuth: PropTypes.bool,
     to: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
     onClick: PropTypes.func,
   };
@@ -21,6 +25,12 @@ class Link extends React.Component {
   handleClick = (event) => {
     if (this.props.onClick) {
       this.props.onClick(event);
+    }
+
+    if (this.props.checkAuth) {
+      if (!auth.loggedIn()) {
+        auth.login();
+      }
     }
 
     if (event.button !== 0 /* left click */) {

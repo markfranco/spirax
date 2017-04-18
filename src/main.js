@@ -16,26 +16,17 @@ import ReactDOM from 'react-dom';
 import FastClick from 'fastclick';
 import { Provider } from 'react-redux';
 
-import store from './store';
+import configureStore from './store';
 import router from './router';
 import history from './history';
-import AuthService from './utils/authService';
 
-const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
-
-// validate authentication for private routes
-const requireAuth = (nextState, replace) => {
-  if (!auth.loggedIn()) {
-    replace({ pathname: '/login' });
-  }
-};
+const store = configureStore();
 
 let routes = require('./routes.json').default; // Loaded with utils/routes-loader.js
 
 const container = document.getElementById('container');
 
 function renderComponent(component) {
-  console.log('component in main.js', component);
   ReactDOM.render(<Provider store={store}>{component}</Provider>, container);
 }
 
@@ -44,7 +35,6 @@ function renderComponent(component) {
 function render(location) {
   router.resolve(routes, location)
     .then((component) => {
-      console.log('component', component);
       renderComponent(component);
     })
     .catch(error => router.resolve(routes, { ...location, error }).then(renderComponent));

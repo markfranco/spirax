@@ -10,18 +10,11 @@
 
 import React from 'react';
 import Link from '../Link';
-// import AuthService from '../../src/utils/authService';
+import AuthService from '../../src/utils/authService';
+
+const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
+
 // import history from '../../src/history';
-
-// const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
-
-// const requireAuth = (nextState, replace) => {
-//   console.log('this was checked', auth.loggedIn());
-//   if (!auth.loggedIn()) {
-//     // replace({ pathname: '/login' });
-//     history.push({ pathname: '/', search: '/' });
-//   }
-// };
 
 class Navigation extends React.Component {
 
@@ -37,7 +30,10 @@ class Navigation extends React.Component {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
         <Link className="mdl-navigation__link" to="/">Home</Link>
-        <Link className="mdl-navigation__link" to="/about">About</Link>
+        {
+          auth.loggedIn() &&
+          <Link className="mdl-navigation__link" to="/about">About</Link>
+        }
       </nav>
     );
   }

@@ -18,6 +18,8 @@
     "react-mdl": "^1.9.0",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
+    "redux-logger": "^3.0.1",
+    "redux-thunk": "^2.2.0",
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
@@ -47,6 +49,7 @@
     "front-matter": "^2.1.2",
     "highlight.js": "^9.10.0",
     "json-loader": "^0.5.4",
+    "json-server": "^0.9.6",
     "markdown-it": "^8.3.1",
     "mocha": "^3.2.0",
     "path-to-regexp": "^1.7.0",
@@ -114,6 +117,7 @@
     "build:debug": "node tools/build.js --debug",
     "publish": "node tools/publish.js",
     "publish:debug": "node tools/publish.js --debug",
-    "start": "node tools/run.js"
+    "start": "node tools/run.js",
+    "start:server": "json-server --watch db.json --port 3004"
   }
 }

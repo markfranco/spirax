@@ -13,6 +13,7 @@ const firebase = require('firebase-tools');
 const build = require('./build');
 const task = require('./task');
 const config = require('./config');
+const s3 = require('s3');
 
 // Build and deploy the app to Firebase
 module.exports = task('deploy', () => Promise.resolve()
@@ -23,3 +24,22 @@ module.exports = task('deploy', () => Promise.resolve()
     cwd: path.resolve(__dirname, '../'),
   }))
   .then(() => { setTimeout(() => process.exit()); }));
+
+// This is not currently working
+module.exports = task('publish', () => new Promise((resolve, reject) => {
+  const client = s3.createClient({
+    s3Options: {
+      accessKeyId: 'AKIAIRNW2XHLXVKMWTCQ',
+      secretAccessKey: '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',
+      region: 'ap-southeast-2',
+      sslEnabled: true,
+    },
+  });
+  const uploader = client.uploadDir({
+    localDir: 'public',
+    deleteRemoved: true,
+    s3Params: { Bucket: 'artgorithms' },
+  });
+  uploader.on('error', reject);
+  uploader.on('end', resolve);
+}));

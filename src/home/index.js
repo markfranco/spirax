@@ -9,43 +9,77 @@
  */
 
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+
 import Layout from '../../components/Layout';
 import sGlobal from '../assets/global.css';
 import s from './styles.css';
 import { title, html } from './index.md';
 import AuthService from '../utils/authService';
 
+import * as actions from '../actions';
+
+const mapStateToProps = (state) => {
+  const { auth, offers } = state;
+  return { auth, offers };
+};
+
 const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
 
 class HomePage extends React.Component {
 
   static propTypes = {
-    auth: PropTypes.instanceOf(AuthService),
     articles: PropTypes.arrayOf(PropTypes.shape({
       url: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       author: PropTypes.string.isRequired,
     }).isRequired).isRequired,
-    profile: PropTypes.object,
+    offers: PropTypes.object,
+    // (PropTypes.shape({
+    //   title: PropTypes.string.isRequired,
+    //   author: PropTypes.string.isRequired,
+    // }).isRequired),
+    dispatch: PropTypes.func,
+    user: PropTypes.object,
+    auth: PropTypes.object,
+    userLoggedIn: PropTypes.bool,
   };
 
   constructor(props, context) {
     super(props, context);
+
     this.state = {
       profile: auth.getProfile(),
     };
     // listen to profile_updated events to update internal state
-    auth.on('profile_updated', (newProfile) => {
-      this.setState({ profile: newProfile });
+    auth.on('profile_updated', (profile) => {
+      this.props.dispatch(actions.updateProfile(profile));
     });
   }
 
   componentDidMount() {
     document.title = title;
+
+    const { dispatch, offers } = this.props;
+
+    // Should check JWT is user is authenticationed
+    const isUserLoggedIn = auth.loggedIn();
+    const profile = auth.getProfile();
+
+    dispatch(actions.fetchOffersIfNeeded(offers));
+
+    // This is not right
+    dispatch(actions.checkAuth(isUserLoggedIn, profile));
+  }
+
+  logout() {
+    this.props.dispatch(actions.userLogout());
+    auth.logout();
   }
 
   render() {
     return (
+      // This should have its own component
       <Layout className={s.content}>
         <div
           className={sGlobal.container}
@@ -53,9 +87,19 @@ class HomePage extends React.Component {
           dangerouslySetInnerHTML={{ __html: html }}
         />
         <h4>Articles</h4>
-        <button onClick={() => auth.login()}>Login</button>
-        <button onClick={() => auth.logout()}>Logout</button>
+        { this.props.auth.userLoggedIn &&
+          <div>
+            <h2>Hello there {this.props.auth.user.name}</h2>
+            <button onClick={() => this.logout()}>Logout</button>
+          </div>
+        }
+        {
+          !this.props.auth.userLoggedIn &&
+          <button onClick={() => auth.login()}>Login</button>
+        }
+
         <button onClick={() => console.log(this)}>This</button>
+
         <ul>
           {this.props.articles.map(article =>
             <li key={article.url}>
@@ -64,11 +108,24 @@ class HomePage extends React.Component {
             </li>,
           )}
         </ul>
+        <ul>
+          { this.props.offers.items &&
+            this.props.offers.items.map(offer =>
+              <li key={offer.id}>
+                <h4>{offer.title} by {offer.author}</h4>
+              </li>,
+          )}
+        </ul>
+        <p>Last updated at:&nbsp;
+          { this.props.offers.lastUpdated &&
+            new Date(this.props.offers.lastUpdated).toString()
+          }
+        </p>
         <p>
-          <br /><br />
+          <br />
+          <br />
         </p>
         <br />
-        <h3>Profile</h3>
 
       </Layout>
     );
@@ -76,4 +133,7 @@ class HomePage extends React.Component {
 
 }
 
-export default HomePage;
+export default connect(
+  mapStateToProps,
+  // mapDispatchToProps,
+)(HomePage);
