@@ -13,7 +13,9 @@ import {
   REQUEST_OFFERS, RECEIVE_OFFERS,
 } from '../actions';
 
-function auth(state = {}, action) {
+function auth(state = {
+  userLoggedIn: false,
+}, action) {
   switch (action.type) {
     case USER_LOGIN:
       return Object.assign({}, state, {

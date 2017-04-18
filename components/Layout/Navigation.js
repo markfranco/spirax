@@ -11,6 +11,7 @@
 import React from 'react';
 import Link from '../Link';
 import AuthService from '../../src/utils/authService';
+import s from './Layout.css';
 
 const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
 
@@ -29,10 +30,14 @@ class Navigation extends React.Component {
   render() {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
-        <Link className="mdl-navigation__link" to="/">Home</Link>
+        <Link className={`${s.link}`} to="/">Home</Link>
         {
           auth.loggedIn() &&
-          <Link className="mdl-navigation__link" to="/about">About</Link>
+          <div>
+            <Link className={`${s.link}`} to="/about">About</Link>
+            <Link className={`${s.link}`} to="/profile">Profile</Link>
+          </div>
+          
         }
       </nav>
     );

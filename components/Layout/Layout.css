@@ -19,3 +19,11 @@
   display: flex;
   flex-direction: column;
 }
+
+.link {
+  display: inline-block;
+  color: #fff;
+  line-height: 64px;
+  padding: 0 24px;
+  text-decoration: none;
+}

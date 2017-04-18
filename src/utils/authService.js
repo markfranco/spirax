@@ -6,7 +6,7 @@ import { isTokenExpired } from './jwtHelper';
 // import { browserHistory } from 'react-router';
 
 export default class AuthService extends EventEmitter {
-  constructor(clientId, domain) {
+  constructor(clientId = 'PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', domain = 'markfranco.au.auth0.com') {
     super();
     this.lock = new Auth0Lock(clientId, domain, {
       auth: {

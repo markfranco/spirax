@@ -17,6 +17,8 @@ import s from './styles.css';
 import { title, html } from './index.md';
 import AuthService from '../utils/authService';
 
+import Profile from '../profile';
+
 import * as actions from '../actions';
 
 const mapStateToProps = (state) => {
@@ -24,7 +26,7 @@ const mapStateToProps = (state) => {
   return { auth, offers };
 };
 
-const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
+const auth = new AuthService();
 
 class HomePage extends React.Component {
 
@@ -135,5 +137,4 @@ class HomePage extends React.Component {
 
 export default connect(
   mapStateToProps,
-  // mapDispatchToProps,
 )(HomePage);
