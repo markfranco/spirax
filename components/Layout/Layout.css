@@ -9,10 +9,15 @@
  */
 
 .content {
-  margin: 0 auto;
-  max-width: 1000px;
+  /*margin: 0 auto;*/
+  /*max-width: 1000px;*/
   width: 100%;
   flex: 1;
+
+  /*position: relative;
+  top: 0;
+  left: 0;
+  display: table;*/
 }
 
 .main {
@@ -26,4 +31,7 @@
   line-height: 64px;
   padding: 0 24px;
   text-decoration: none;
+  &:hover {
+    cursor: pointer;
+  }
 }

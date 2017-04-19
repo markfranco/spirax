@@ -16,8 +16,8 @@ import sGlobal from '../assets/global.css';
 import s from './styles.css';
 import { title, html } from './index.md';
 import AuthService from '../utils/authService';
-
-import Profile from '../profile';
+import Article from '../../components/Articles';
+import Button from '../../components/Button';
 
 import * as actions from '../actions';
 
@@ -83,38 +83,23 @@ class HomePage extends React.Component {
     return (
       // This should have its own component
       <Layout className={s.content}>
-        <div
-          className={sGlobal.container}
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-        <h4>Articles</h4>
-        { this.props.auth.userLoggedIn &&
+        <div className={s.welcome}>
           <div>
-            <h2>Hello there {this.props.auth.user.name}</h2>
-            <button onClick={() => this.logout()}>Logout</button>
+            <span>Equity crowdfunding in Australia and New Zealand</span>
+            <h2>Invest in Innovative and Disruptive Companies</h2>
           </div>
-        }
-        {
-          !this.props.auth.userLoggedIn &&
-          <button onClick={() => auth.login()}>Login</button>
-        }
+          <Button primary accent ripple className={s.invest}>Invest</Button>
+          <Button primary accent ripple className={s.raise}>Raise</Button>
+        </div>
 
         <button onClick={() => console.log(this)}>This</button>
 
-        <ul>
-          {this.props.articles.map(article =>
-            <li key={article.url}>
-              <a href={article.url}>{article.title}</a>
-              by {article.author}
-            </li>,
-          )}
-        </ul>
+        <Article />
         <ul>
           { this.props.offers.items &&
             this.props.offers.items.map(offer =>
               <li key={offer.id}>
-                <h4>{offer.title} by {offer.author}</h4>
+                <span>{offer.title} by {offer.author}</span>
               </li>,
           )}
         </ul>
@@ -123,11 +108,6 @@ class HomePage extends React.Component {
             new Date(this.props.offers.lastUpdated).toString()
           }
         </p>
-        <p>
-          <br />
-          <br />
-        </p>
-        <br />
 
       </Layout>
     );

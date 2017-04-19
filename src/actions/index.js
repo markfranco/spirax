@@ -2,13 +2,9 @@
  * action types
  */
 
-export const USER_LOGIN = 'USER_LOGIN';
-export const USER_LOGOUT = 'USER_LOGOUT';
-export const CHECK_AUTH = 'CHECK_AUTH';
-export const UPDATE_PROFILE = 'UPDATE_PROFILE';
-
-export const REQUEST_OFFERS = 'REQUEST_OFFERS';
-export const RECEIVE_OFFERS = 'RECEIVE_OFFERS';
+import {
+  USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES,
+  UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES } from '../constants';
 
 /*
  * action creators
@@ -51,6 +47,33 @@ export function receiveOffers(offers) {
   };
 }
 
+export function requestArticles(articles) {
+  return {
+    type: REQUEST_ARTICLES,
+    articles,
+  };
+}
+
+export function receiveArticles(articles) {
+  return {
+    type: RECEIVE_ARTICLES,
+    articles,
+    receivedAt: Date.now(),
+  };
+}
+
+export function fetchArticles() {
+  return (dispatch) => {
+    dispatch(requestArticles());
+    return fetch('https://gist.githubusercontent.com/koistya/a32919e847531320675764e7308b796a/raw/articles.json')
+      .then(response => response.json())
+      .then(articles => dispatch(receiveArticles(articles),
+        error => console.error('error', error),
+      ));
+  };
+}
+
+
 function fetchOffers() {
   return (dispatch) => {
     dispatch(requestOffers());
@@ -74,6 +97,30 @@ function shouldFetchOffers(state, offers) {
       return false;
     } else {
       return false;
+    }
+  };
+}
+
+function shouldFetchArticles(state, articles) {
+  return (dispatch) => {
+    const stateOffers = state.articles;
+    if (articles === undefined || stateOffers.items.length !== articles.items.length) {
+      return dispatch(fetchOffers());
+    }
+    if (!articles) {
+      return true;
+    } else if (articles.isFetching) {
+      return false;
+    } else {
+      return false;
+    }
+  };
+}
+
+export function fetchArticlesIfNeeded(articles) {
+  return (dispatch, getState) => {
+    if (shouldFetchArticles(getState(), articles)) {
+      return dispatch(fetchArticles(articles));
     }
   };
 }

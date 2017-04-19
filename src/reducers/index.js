@@ -1,17 +1,12 @@
-// import { combineReducers } from 'redux';
-// import user from './user';
 // import runtime from './runtime';
 
-// export default combineReducers({
-//   user,
-//   runtime,
-// });
-
 import { combineReducers } from 'redux';
+
+import articles from './articles';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, UPDATE_PROFILE,
   REQUEST_OFFERS, RECEIVE_OFFERS,
-} from '../actions';
+} from '../constants';
 
 function auth(state = {
   userLoggedIn: false,
@@ -65,6 +60,7 @@ function offers(state = {
 const rootReducer = combineReducers({
   auth,
   offers,
+  articles,
 });
 
 export default rootReducer;

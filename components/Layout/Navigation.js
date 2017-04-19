@@ -9,13 +9,21 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import Link from '../Link';
 import AuthService from '../../src/utils/authService';
 import s from './Layout.css';
+import * as actions from '../../src/actions';
 
-const auth = new AuthService('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com');
+
+const authService = new AuthService();
 
 // import history from '../../src/history';
+
+const mapStateToProps = (state) => {
+  const { auth } = state;
+  return { auth };
+};
 
 class Navigation extends React.Component {
 
@@ -27,17 +35,26 @@ class Navigation extends React.Component {
     window.componentHandler.downgradeElements(this.root);
   }
 
+  logout() {
+    this.props.dispatch(actions.userLogout());
+    authService.logout();
+  }
+
   render() {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
-        <Link className={`${s.link}`} to="/">Home</Link>
+        <Link className={`${s.link}`} to="/syndicates">Syndicates</Link>
         {
-          auth.loggedIn() &&
+          authService.loggedIn() &&
           <div>
             <Link className={`${s.link}`} to="/about">About</Link>
             <Link className={`${s.link}`} to="/profile">Profile</Link>
+            <a className={`${s.link}`} onClick={() => this.logout()}>Logout</a>
           </div>
-          
+        }
+        {
+          !authService.loggedIn() &&
+          <a className={`${s.link}`} onClick={() => authService.login()}>Login</a>
         }
       </nav>
     );
@@ -45,4 +62,4 @@ class Navigation extends React.Component {
 
 }
 
-export default Navigation;
+export default connect(mapStateToProps)(Navigation);
