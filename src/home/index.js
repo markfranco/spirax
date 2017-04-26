@@ -30,6 +30,7 @@ const auth = new AuthService();
 
 class HomePage extends React.Component {
 
+  // Fix propTypes properly
   static propTypes = {
     articles: PropTypes.arrayOf(PropTypes.shape({
       url: PropTypes.string.isRequired,
@@ -62,13 +63,16 @@ class HomePage extends React.Component {
   componentDidMount() {
     document.title = title;
 
-    const { dispatch, offers } = this.props;
+    const {
+      dispatch,
+      // offers,
+    } = this.props;
 
     // Should check JWT is user is authenticationed
     const isUserLoggedIn = auth.loggedIn();
     const profile = auth.getProfile();
 
-    dispatch(actions.fetchOffersIfNeeded(offers));
+    // dispatch(actions.fetchOffersIfNeeded(offers));
 
     // This is not right
     dispatch(actions.checkAuth(isUserLoggedIn, profile));
@@ -77,6 +81,7 @@ class HomePage extends React.Component {
   logout() {
     this.props.dispatch(actions.userLogout());
     auth.logout();
+    // Needs to go to the home page
   }
 
   render() {
@@ -84,30 +89,33 @@ class HomePage extends React.Component {
       // This should have its own component
       <Layout className={s.content}>
         <div className={s.welcome}>
-          <div>
-            <span>Equity crowdfunding in Australia and New Zealand</span>
-            <h2>Invest in Innovative and Disruptive Companies</h2>
+          <div className={s.contentContainer}>
+
+            { !this.props.auth.userLoggedIn &&
+              <div>
+                <h1>Invest in your local farm</h1>
+                <span>Help argiculture in the Philippines</span>
+                <div className={s.buttons}>
+                  <Button
+                    primary accent ripple
+                    className={s.register}
+                    onClick={() => auth.login()}
+                  >
+                    Register
+                  </Button>
+                </div>
+              </div>
+            }
+
+            { this.props.auth.userLoggedIn &&
+              <div>
+                <h3>Welcome {this.props.auth.user.name}</h3>
+                <span>Thank you for registering your interest!</span>
+              </div>
+            }
+
           </div>
-          <Button primary accent ripple className={s.invest}>Invest</Button>
-          <Button primary accent ripple className={s.raise}>Raise</Button>
         </div>
-
-        <button onClick={() => console.log(this)}>This</button>
-
-        <Article />
-        <ul>
-          { this.props.offers.items &&
-            this.props.offers.items.map(offer =>
-              <li key={offer.id}>
-                <span>{offer.title} by {offer.author}</span>
-              </li>,
-          )}
-        </ul>
-        <p>Last updated at:&nbsp;
-          { this.props.offers.lastUpdated &&
-            new Date(this.props.offers.lastUpdated).toString()
-          }
-        </p>
 
       </Layout>
     );

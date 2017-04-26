@@ -13,13 +13,12 @@ const mapStateToProps = (state) => {
   return { auth, offers };
 };
 
-class Syndicates extends React.Component {
+class Raise extends React.Component {
   constructor(props, context) {
     super(props, context);
   }
 
   componentDidMount() {
-
     const { dispatch } = this.props;
 
     // Should check JWT is user is authenticationed
@@ -30,16 +29,22 @@ class Syndicates extends React.Component {
     dispatch(actions.checkAuth(isUserLoggedIn, profile));
   }
 
+  handleChange(event) {
+    console.log('event in handleChange', event);
+  }
+
+  // This should have a form component
   render() {
     return (
       <Layout>
-        <h1>Syndicates</h1>
-        <div>
-          {
-            this.props.auth.userLoggedIn &&
-            <p>Name: {this.props.auth.user.name}</p>
-          }
-        </div>
+        <h1>Initial Questionnaire</h1>
+        <p>Please complete the below questionnaire and one of our team will be in touch.</p>
+        <form>
+          <label htmlFor="name">Name:
+            <input type="text" name="name" onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
       </Layout>
     );
   }
@@ -48,4 +53,4 @@ class Syndicates extends React.Component {
 export default connect(
   mapStateToProps,
   // mapDispatchToProps,
-)(Syndicates);
+)(Raise);

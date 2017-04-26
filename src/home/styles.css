@@ -12,16 +12,30 @@
   width: 100%;
   height: 100vh;
   margin: 0;
-  padding: 0;
-  background-image: url(../../src/assets/images/home-top-bg.jpg);
+  padding: 0 145px;
+  padding-top: 250px;
+  background-image: url(../../src/assets/images/bg.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
+  color: #fff;
 }
 
-.invest, .raise {
-  background-color: #ffffff;
+.contentContainer {
+  /*width: 50%;*/
+  text-align: center;
+}
+
+.buttons {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.register {
+  background-color: #fff;
   margin: 10px;
+  min-width: 130px;
+  min-height: 45px;
 }
 
 @media screen and (max-width: 1024px) {

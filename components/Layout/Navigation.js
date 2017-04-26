@@ -14,11 +14,9 @@ import Link from '../Link';
 import AuthService from '../../src/utils/authService';
 import s from './Layout.css';
 import * as actions from '../../src/actions';
-
+import history from '../../src/history';
 
 const authService = new AuthService();
-
-// import history from '../../src/history';
 
 const mapStateToProps = (state) => {
   const { auth } = state;
@@ -37,13 +35,13 @@ class Navigation extends React.Component {
 
   logout() {
     this.props.dispatch(actions.userLogout());
+    history.push('/');
     authService.logout();
   }
 
   render() {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
-        <Link className={`${s.link}`} to="/syndicates">Syndicates</Link>
         {
           authService.loggedIn() &&
           <div>

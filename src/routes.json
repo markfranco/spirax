@@ -25,6 +25,10 @@
     "page": "./syndicates"
   },
   {
+    "path": "/raise",
+    "page": "./raise"
+  },
+  {
     "path": "/tasks/:status(pending|completed)?",
     "page": "./home"
   }

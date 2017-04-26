@@ -10,11 +10,21 @@
 
 .row {
   padding: 40px;
+  position: absolute;
+  z-index: 2;
+  background: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
 }
 
 .title {
   color: #fff;
   text-decoration: none;
+}
+
+.header {
+  /*background-color: #333333;*/
 }
 
 @media screen and (max-width: 1024px) {
