@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "auth0-lock": "^10.14.0",
+    "axios": "^0.16.1",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "fastclick": "^1.0.6",

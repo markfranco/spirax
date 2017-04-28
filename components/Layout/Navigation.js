@@ -43,7 +43,7 @@ class Navigation extends React.Component {
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
         {
-          authService.loggedIn() &&
+          this.props.auth.userLoggedIn &&
           <div>
             <Link className={`${s.link}`} to="/about">About</Link>
             <Link className={`${s.link}`} to="/profile">Profile</Link>
@@ -51,7 +51,7 @@ class Navigation extends React.Component {
           </div>
         }
         {
-          !authService.loggedIn() &&
+          !this.props.auth.userLoggedIn &&
           <a className={`${s.link}`} onClick={() => authService.login()}>Login</a>
         }
       </nav>

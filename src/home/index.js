@@ -22,8 +22,8 @@ import Button from '../../components/Button';
 import * as actions from '../actions';
 
 const mapStateToProps = (state) => {
-  const { auth, offers } = state;
-  return { auth, offers };
+  const { auth, offers, answer } = state;
+  return { auth, offers, answer };
 };
 
 const auth = new AuthService();
@@ -53,29 +53,78 @@ class HomePage extends React.Component {
 
     this.state = {
       profile: auth.getProfile(),
+      term: '',
+      money: 0,
     };
     // listen to profile_updated events to update internal state
     auth.on('profile_updated', (profile) => {
       this.props.dispatch(actions.updateProfile(profile));
+      this.props.dispatch(actions.checkAuth(true, profile));
     });
+
+    const config = {
+      apiKey: 'AIzaSyCIP3g1UX3ToPJtglboEwY_ZXevi9WTvis',
+      authDomain: 'seedvest-5e6c0.firebaseapp.com',
+      databaseURL: 'https://seedvest-5e6c0.firebaseio.com',
+      projectId: 'seedvest-5e6c0',
+      storageBucket: 'seedvest-5e6c0.appspot.com',
+      messagingSenderId: '838314676214',
+    };
+    window.firebase.initializeApp(config);
+
+    this.props.dispatch(actions.checkAuth(auth.loggedIn(), auth.getProfile()));
   }
 
   componentDidMount() {
     document.title = title;
+  }
 
-    const {
-      dispatch,
-      // offers,
-    } = this.props;
+  outputUpdate(vol) {
+    document.querySelector('#volume').value = vol;
+  }
 
-    // Should check JWT is user is authenticationed
-    const isUserLoggedIn = auth.loggedIn();
-    const profile = auth.getProfile();
+  onChangeMoney(event) {
+    document.querySelector('#volume').value = event.target.value;
+    this.setState({
+      money: event.target.value,
+    });
+  }
 
-    // dispatch(actions.fetchOffersIfNeeded(offers));
+  onChangeTerm(event) {
+    console.log('Term Value', event.target.value);
+    this.setState({
+      term: event.target.value,
+    });
+  }
 
-    // This is not right
-    dispatch(actions.checkAuth(isUserLoggedIn, profile));
+  handleSubmit() {
+    const userRef = window.firebase.database().ref(`users/${this.props.auth.user.fb_id}/answer`);
+
+    const postData = {
+      term: this.state.term,
+      money: this.state.money,
+    };
+
+    userRef.transaction((response) => {
+      console.log('This was the response', response);
+      if (response === null) {
+        return postData;
+      } else {
+        return;
+      }
+    }, (error, committed, snapshot) => {
+      if (error) {
+        console.log('Transaction failed abnormally!', error);
+      } else if (!committed) {
+        console.log('We aborted the transaction.');
+      } else {
+        console.log('This worked YAY!');
+        console.log('committed', committed);
+      }
+      console.log('Data baby! ', snapshot.val());
+    });
+
+    console.log('Got through!');
   }
 
   logout() {
@@ -95,6 +144,7 @@ class HomePage extends React.Component {
               <div>
                 <h1>Invest in your local farm</h1>
                 <span>Help argiculture in the Philippines</span>
+
                 <div className={s.buttons}>
                   <Button
                     primary accent ripple
@@ -104,6 +154,7 @@ class HomePage extends React.Component {
                     Register
                   </Button>
                 </div>
+
               </div>
             }
 
@@ -111,9 +162,41 @@ class HomePage extends React.Component {
               <div>
                 <h3>Welcome {this.props.auth.user.name}</h3>
                 <span>Thank you for registering your interest!</span>
+                <br />
+                <br />
+
+                { this.props.answer.term && this.props.answer.money &&
+                  <h3>
+                    You have indicated you would like to invest ${this.props.answer.money} for {this.props.answer.term}
+                  </h3>
+                }
+
+                { !this.props.answer.term && !this.props.answer.money &&
+                  <div>
+                    <p>How much would you be interesting in investing?</p>
+                    <input
+                      type="range" min="0" max="100000" id="fader" step="5000"
+                      list="volsettings" onChange={e => this.onChangeMoney(e)}
+                    />
+                    <output htmlFor="fader" id="volume">0</output>
+
+                    <br />
+                    <br />
+
+                    <label htmlFor="term">How long would you like to invest for?</label>
+                    <select name="term" value={this.state.termValue} onChange={e => this.onChangeTerm(e)}>
+                      <option value="3 months">3 months</option>
+                      <option value="6 months">6 months</option>
+                      <option value="1 year">1 year</option>
+                      <option value="2 years">2 years</option>
+                    </select>
+
+                    <button onClick={() => this.handleSubmit()}>Submit</button>
+                  </div>
+                }
+
               </div>
             }
-
           </div>
         </div>
 

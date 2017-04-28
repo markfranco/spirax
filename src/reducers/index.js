@@ -5,7 +5,7 @@ import { combineReducers } from 'redux';
 import articles from './articles';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, UPDATE_PROFILE,
-  REQUEST_OFFERS, RECEIVE_OFFERS,
+  REQUEST_OFFERS, RECEIVE_OFFERS, CHECKED_ANSWER,
 } from '../constants';
 
 function auth(state = {
@@ -37,6 +37,19 @@ function auth(state = {
   }
 }
 
+function answer(state = {},
+  action) {
+  switch (action.type) {
+    case CHECKED_ANSWER:
+      return Object.assign({}, state, {
+        money: action.answer.money,
+        term: action.answer.term,
+      });
+    default:
+      return state;
+  }
+}
+
 function offers(state = {
   isFetching: false,
   items: [],
@@ -61,6 +74,7 @@ const rootReducer = combineReducers({
   auth,
   offers,
   articles,
+  answer,
 });
 
 export default rootReducer;

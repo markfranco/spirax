@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import Auth0Lock from 'auth0-lock';
+import axios from 'axios';
 
 import { isTokenExpired } from './jwtHelper';
 
@@ -11,7 +12,9 @@ export default class AuthService extends EventEmitter {
     this.lock = new Auth0Lock(clientId, domain, {
       auth: {
         redirectUrl: 'http://localhost:3000/',
+        // redirectUrl: 'http://aws-website-seedinvest-7elpz.s3-website-us-east-1.amazonaws.com/',
         responseType: 'token',
+        scope: 'app_metadata',
       },
     });
 
@@ -24,10 +27,29 @@ export default class AuthService extends EventEmitter {
     this.setToken(authResult.idToken);
     // navigate to the home route
     // browserHistory.replace('/home');
+    // });
+
+    axios.post('https://markfranco.au.auth0.com/delegation', {
+      id_token: authResult.idToken,
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      api: 'firebase',
+      scope: 'openid name email displayName app_metadata',
+      target: 'PZRNubBes13c3ZlKIt700T7Cn2zdsHM7',
+      client_id: 'PZRNubBes13c3ZlKIt700T7Cn2zdsHM7',
+    })
+    .then((response) => {
+      window.firebase.auth()
+        .signInWithCustomToken(response.data.id_token)
+        .catch((error) => {
+          console.error(error);
+        });
+      console.log('This worked, response is', response);
+    })
+    .catch(error => console.error(error));
 
     this.lock.getProfile(authResult.idToken, (error, profile) => {
       if (error) {
-        console.log('Error loading the Profile', error);
+        console.error('Error loading the Profile', error);
       } else {
         this.setProfile(profile);
       }

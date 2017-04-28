@@ -3,26 +3,37 @@
  */
 
 import {
-  USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES,
+  USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES, CHECKED_ANSWER,
   UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES } from '../constants';
 
 /*
  * action creators
  */
 
+export function checkHasAnswer(fbId) {
+  return (dispatch) => {
+    window.firebase.database().ref(`/users/${fbId}`).once('value').then((snapshot) => {
+      dispatch({ type: CHECKED_ANSWER, answer: snapshot.val().answer });
+    });
+  };
+}
+
 export function userLogin(user) {
-  return { type: USER_LOGIN, user };
+  return (dispatch) => {
+    dispatch(checkHasAnswer(user.fb_id));
+    dispatch({ type: USER_LOGIN, user });
+  };
 }
 
 export function userLogout() {
   return { type: USER_LOGOUT };
 }
 
-export function checkAuth(isUserLoggedIn, profile) {
+export function checkAuth(userLoggedIn, profile) {
   return (dispatch) => {
-    dispatch({ type: CHECK_AUTH, isUserLoggedIn, profile });
+    dispatch({ type: CHECK_AUTH, userLoggedIn, profile });
 
-    if (isUserLoggedIn) {
+    if (userLoggedIn) {
       dispatch(userLogin(profile));
     }
   };
@@ -65,6 +76,25 @@ export function receiveArticles(articles) {
 export function fetchArticles() {
   return (dispatch) => {
     dispatch(requestArticles());
+    return fetch('https://gist.githubusercontent.com/koistya/a32919e847531320675764e7308b796a/raw/articles.json')
+      .then(response => response.json())
+      .then(articles => dispatch(receiveArticles(articles),
+        error => console.error('error', error),
+      ));
+  };
+}
+
+// Retrieve from database
+// if no answer already
+
+export function postToDatabase() {
+  return (dispatch) => {
+    // dispatch(requestArticles());
+
+    // Post Request to firebase
+
+    // On success dispatch success
+
     return fetch('https://gist.githubusercontent.com/koistya/a32919e847531320675764e7308b796a/raw/articles.json')
       .then(response => response.json())
       .then(articles => dispatch(receiveArticles(articles),
