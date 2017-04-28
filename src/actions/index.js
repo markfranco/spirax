@@ -13,7 +13,9 @@ import {
 export function checkHasAnswer(fbId) {
   return (dispatch) => {
     window.firebase.database().ref(`/users/${fbId}`).once('value').then((snapshot) => {
-      dispatch({ type: CHECKED_ANSWER, answer: snapshot.val().answer });
+      if (snapshot.val().info) {
+        dispatch({ type: CHECKED_ANSWER, info: snapshot.val().info });
+      }
     });
   };
 }

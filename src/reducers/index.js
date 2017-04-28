@@ -42,8 +42,8 @@ function answer(state = {},
   switch (action.type) {
     case CHECKED_ANSWER:
       return Object.assign({}, state, {
-        money: action.answer.money,
-        term: action.answer.term,
+        money: action.info.money,
+        term: action.info.term,
       });
     default:
       return state;

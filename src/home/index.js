@@ -54,7 +54,8 @@ class HomePage extends React.Component {
     this.state = {
       profile: auth.getProfile(),
       term: '',
-      money: 0,
+      money: '',
+      submitted: false,
     };
     // listen to profile_updated events to update internal state
     auth.on('profile_updated', (profile) => {
@@ -91,27 +92,28 @@ class HomePage extends React.Component {
   }
 
   onChangeTerm(event) {
-    console.log('Term Value', event.target.value);
     this.setState({
       term: event.target.value,
     });
   }
 
   handleSubmit() {
-    const userRef = window.firebase.database().ref(`users/${this.props.auth.user.fb_id}/answer`);
+    const userRef = window.firebase.database().ref(`users/${this.props.auth.user.fb_id}/info`);
 
     const postData = {
       term: this.state.term,
       money: this.state.money,
+      name: this.props.auth.user.name,
+      email: this.props.auth.user.email,
+      updated: new Date().toString(),
     };
 
     userRef.transaction((response) => {
       console.log('This was the response', response);
       if (response === null) {
         return postData;
-      } else {
+      } 
         return;
-      }
     }, (error, committed, snapshot) => {
       if (error) {
         console.log('Transaction failed abnormally!', error);
@@ -122,9 +124,8 @@ class HomePage extends React.Component {
         console.log('committed', committed);
       }
       console.log('Data baby! ', snapshot.val());
+      this.setState({ submitted: true });
     });
-
-    console.log('Got through!');
   }
 
   logout() {
@@ -134,6 +135,17 @@ class HomePage extends React.Component {
   }
 
   render() {
+    if (this.state.submitted) {
+      var thankYouMessage = (<div>
+        <h3>
+          Thank you!
+        </h3>
+        <h3>
+          You have indicated you would like to invest ${this.state.money} for {this.state.term}
+        </h3>
+      </div>);
+    }
+
     return (
       // This should have its own component
       <Layout className={s.content}>
@@ -171,7 +183,9 @@ class HomePage extends React.Component {
                   </h3>
                 }
 
-                { !this.props.answer.term && !this.props.answer.money &&
+                {thankYouMessage}
+
+                { this.state.submitted || (!this.props.answer.term && !this.props.answer.money) &&
                   <div>
                     <p>How much would you be interesting in investing?</p>
                     <input
