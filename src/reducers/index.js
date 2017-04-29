@@ -6,10 +6,16 @@ import articles from './articles';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, UPDATE_PROFILE,
   REQUEST_OFFERS, RECEIVE_OFFERS, CHECKED_ANSWER,
+  LOGOUT_REQUEST, LOGOUT_SUCCESS,
 } from '../constants';
 
+// The auth reducer. The starting state sets authentication
+// based on a token being in local storage. In a real app,
+// we would also want a util to check if the token is expired.
 function auth(state = {
   userLoggedIn: false,
+  isFetching: false,
+  isAuthenticated: !!localStorage.getItem('id_token'),
 }, action) {
   switch (action.type) {
     case USER_LOGIN:
@@ -18,6 +24,7 @@ function auth(state = {
         user: action.user,
       });
     case USER_LOGOUT:
+    case LOGOUT_SUCCESS:
       return Object.assign({}, state, {
         userLoggedIn: false,
         user: {},

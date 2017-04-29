@@ -11,12 +11,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Link from '../Link';
-import AuthService from '../../src/utils/authService';
+// import authService from '../../src/utils/authService';
 import s from './Layout.css';
 import * as actions from '../../src/actions';
 import history from '../../src/history';
 
-const authService = new AuthService();
+// const authService = new AuthService();
 
 const mapStateToProps = (state) => {
   const { auth } = state;
@@ -33,26 +33,32 @@ class Navigation extends React.Component {
     window.componentHandler.downgradeElements(this.root);
   }
 
+  login() {
+    this.props.dispatch(actions.requestLogin());
+  }
+
   logout() {
-    this.props.dispatch(actions.userLogout());
+    this.props.dispatch(actions.logoutUser());
     history.push('/');
-    authService.logout();
   }
 
   render() {
+    let linksForLater = (<div>
+      <Link className={`${s.link}`} to="/about">About</Link>
+      <Link className={`${s.link}`} to="/profile">Profile</Link>
+    </div>)
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
         {
           this.props.auth.userLoggedIn &&
           <div>
-            <Link className={`${s.link}`} to="/about">About</Link>
-            <Link className={`${s.link}`} to="/profile">Profile</Link>
+            { false && linksForLater }
             <a className={`${s.link}`} onClick={() => this.logout()}>Logout</a>
           </div>
         }
         {
           !this.props.auth.userLoggedIn &&
-          <a className={`${s.link}`} onClick={() => authService.login()}>Login</a>
+          <a className={`${s.link}`} onClick={() => this.login()}>Login</a>
         }
       </nav>
     );

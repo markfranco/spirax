@@ -1,15 +1,22 @@
-/*
- * action types
- */
+import Auth0Lock from 'auth0-lock';
 
+// Action types
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES, CHECKED_ANSWER,
-  UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES } from '../constants';
+  UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES,
+  LOGOUT_REQUEST, LOGOUT_SUCCESS } from '../constants';
 
-/*
- * action creators
- */
+export const lock = new Auth0Lock('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com', {
+  auth: {
+    redirectUrl: 'http://localhost:3000/',
+    // redirectUrl: 'http://aws-website-seedinvest-7elpz.s3-website-us-east-1.amazonaws.com/',
+    responseType: 'token',
+    scope: 'app_metadata',
+  },
+});
 
+
+// Action creators
 export function checkHasAnswer(fbId) {
   return (dispatch) => {
     window.firebase.database().ref(`/users/${fbId}`).once('value').then((snapshot) => {
@@ -20,6 +27,10 @@ export function checkHasAnswer(fbId) {
   };
 }
 
+export function requestLogin() {
+  return dispatch => lock.show();
+}
+
 export function userLogin(user) {
   return (dispatch) => {
     dispatch(checkHasAnswer(user.fb_id));
@@ -28,7 +39,13 @@ export function userLogin(user) {
 }
 
 export function userLogout() {
-  return { type: USER_LOGOUT };
+  return (dispatch) => {
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('firebase_id_token');
+    localStorage.removeItem('profile');
+    localStorage.removeItem('access_token');
+    dispatch({ type: USER_LOGOUT });
+  };
 }
 
 export function checkAuth(userLoggedIn, profile) {
@@ -43,6 +60,34 @@ export function checkAuth(userLoggedIn, profile) {
 
 export function updateProfile(profile) {
   return { type: UPDATE_PROFILE, profile };
+}
+
+function requestLogout() {
+  return {
+    type: LOGOUT_REQUEST,
+    isFetching: true,
+    isAuthenticated: true,
+  };
+}
+
+function receiveLogout() {
+  return {
+    type: LOGOUT_SUCCESS,
+    isFetching: false,
+    isAuthenticated: false,
+  };
+}
+
+// Logs the user out
+export function logoutUser() {
+  return (dispatch) => {
+    dispatch(requestLogout());
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('firebase_id_token');
+    localStorage.removeItem('profile');
+    localStorage.removeItem('access_token');
+    dispatch(receiveLogout());
+  };
 }
 
 function requestOffers(offers) {

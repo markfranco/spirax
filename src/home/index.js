@@ -1,13 +1,3 @@
-/**
- * React Static Boilerplate
- * https://github.com/kriasoft/react-static-boilerplate
- *
- * Copyright © 2015-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
@@ -16,7 +6,7 @@ import sGlobal from '../assets/global.css';
 import s from './styles.css';
 import { title, html } from './index.md';
 import AuthService from '../utils/authService';
-import Article from '../../components/Articles';
+// import Article from '../../components/Articles';
 import Button from '../../components/Button';
 
 import * as actions from '../actions';
@@ -51,16 +41,18 @@ class HomePage extends React.Component {
   constructor(props, context) {
     super(props, context);
 
+    const { dispatch } = this.props;
+
     this.state = {
       profile: auth.getProfile(),
       term: '',
       money: '',
       submitted: false,
     };
+
     // listen to profile_updated events to update internal state
     auth.on('profile_updated', (profile) => {
-      this.props.dispatch(actions.updateProfile(profile));
-      this.props.dispatch(actions.checkAuth(true, profile));
+      dispatch(actions.updateProfile(profile));
     });
 
     const config = {
@@ -73,7 +65,9 @@ class HomePage extends React.Component {
     };
     window.firebase.initializeApp(config);
 
-    this.props.dispatch(actions.checkAuth(auth.loggedIn(), auth.getProfile()));
+    if (auth.loggedIn()) {
+      auth.setProfile(auth.getProfile(), dispatch);
+    }
   }
 
   componentDidMount() {
@@ -137,12 +131,8 @@ class HomePage extends React.Component {
   render() {
     if (this.state.submitted) {
       var thankYouMessage = (<div>
-        <h3>
-          Thank you!
-        </h3>
-        <h3>
-          You have indicated you would like to invest ${this.state.money} for {this.state.term}
-        </h3>
+        <h3>Thank you!</h3>
+        <p>You have indicated you would like to invest ${this.state.money} for {this.state.term}</p>
       </div>);
     }
 
@@ -153,7 +143,7 @@ class HomePage extends React.Component {
           <div className={s.contentContainer}>
 
             { !this.props.auth.userLoggedIn &&
-              <div>
+              <div className={s.banner}>
                 <h1>Invest in your local farm</h1>
                 <span>Help argiculture in the Philippines</span>
 
@@ -185,7 +175,7 @@ class HomePage extends React.Component {
 
                 {thankYouMessage}
 
-                { this.state.submitted || (!this.props.answer.term && !this.props.answer.money) &&
+                { this.state.answer && !this.props.answer.term && !this.props.answer.money &&
                   <div>
                     <p>How much would you be interesting in investing?</p>
                     <input

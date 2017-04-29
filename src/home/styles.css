@@ -21,6 +21,12 @@
   color: #fff;
 }
 
+.banner {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
 .contentContainer {
   /*width: 50%;*/
   text-align: center;

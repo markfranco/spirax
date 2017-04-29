@@ -1,13 +1,3 @@
-/**
- * React Static Boilerplate
- * https://github.com/kriasoft/react-static-boilerplate
- *
- * Copyright © 2015-present Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import 'babel-polyfill';
 import 'whatwg-fetch';
 
@@ -19,7 +9,11 @@ import { Provider } from 'react-redux';
 import configureStore from './store';
 import router from './router';
 import history from './history';
+import AuthService from './utils/authService';
 
+import { lock } from './actions';
+
+const auth = new AuthService();
 const store = configureStore();
 
 let routes = require('./routes.json').default; // Loaded with utils/routes-loader.js
@@ -29,6 +23,10 @@ const container = document.getElementById('container');
 function renderComponent(component) {
   ReactDOM.render(<Provider store={store}>{component}</Provider>, container);
 }
+
+lock.on('authenticated', (response) => {
+  auth.doAuthentication(response, store);
+});
 
 // Find and render a web page matching the current URL path,
 // if such page is not found then render an error page (see routes.json, core/router.js)
