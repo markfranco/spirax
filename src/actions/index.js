@@ -4,25 +4,45 @@ import Auth0Lock from 'auth0-lock';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES, CHECKED_ANSWER,
   UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES,
-  LOGOUT_REQUEST, LOGOUT_SUCCESS } from '../constants';
+  LOGOUT_REQUEST, LOGOUT_SUCCESS, NO_SUBMITTED, SUBMITTED_SUCCESS } from '../constants';
 
 export const lock = new Auth0Lock('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com', {
   auth: {
-    redirectUrl: 'http://localhost:3000/',
-    // redirectUrl: 'http://aws-website-seedinvest-7elpz.s3-website-us-east-1.amazonaws.com/',
+    redirectUrl: window.location.href,
     responseType: 'token',
     scope: 'app_metadata',
   },
 });
 
+// Should be REQUESTED, RETRIEVED, NO_SUBMITTED 
 
 // Action creators
 export function checkHasAnswer(fbId) {
   return (dispatch) => {
-    window.firebase.database().ref(`/users/${fbId}`).once('value').then((snapshot) => {
-      if (snapshot.val().info) {
-        dispatch({ type: CHECKED_ANSWER, info: snapshot.val().info });
-      }
+    window.firebase.database()
+      .ref(`/users/${fbId}`)
+        .once('value')
+        .then((snapshot) => {
+          if (snapshot.val() !== null) {
+            dispatch({ type: CHECKED_ANSWER, info: snapshot.val().info });
+          } else {
+            dispatch({ type: NO_SUBMITTED });
+          }
+        },
+    );
+  };
+}
+
+export function submitAnswer(postData, fbId) {
+  return (dispatch) => {
+    const userRef = window.firebase.database().ref(`users/${fbId}/info`);
+
+    userRef.transaction((response) => {
+      return response === null ? postData : '';
+    }, (error, committed) => {
+      if (error) console.error('Transaction failed abnormally!', error); 
+      else if (!committed) console.warn('We aborted the transaction.');
+      else dispatch({ type: SUBMITTED_SUCCESS, postData });
     });
   };
 }

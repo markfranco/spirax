@@ -21,5 +21,16 @@
     <script src="https://www.google-analytics.com/analytics.js" async defer></script>
     <%_ } _%>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script>
+      const k = {
+        apiKey: '<%= config.apiKey %>',
+        authDomain: '<%= config.authDomain %>',
+        databaseURL: '<%= config.databaseURL %>',
+        projectId: '<%= config.projectId %>',
+        storageBucket: '<%= config.storageBucket %>',
+        messagingSenderId: '<%= config.messagingSenderId %>',
+      };
+      window.firebase.initializeApp(k);
+    </script>
   </body>
 </html>

@@ -9,8 +9,15 @@
  */
 
 module.exports = {
-  title: 'SeedInvest',        // Your website title
+  title: 'SeedInvest',                      // Your website title
   url: 'https://rsb.kriasoft.com',          // Your website URL
   project: 'react-static-boilerplate',      // Firebase project. See README.md -> How to Deploy
   trackingID: 'UA-XXXXX-Y',                 // Google Analytics Site's ID
+  // Firebase
+  apiKey: 'AIzaSyCIP3g1UX3ToPJtglboEwY_ZXevi9WTvis',
+  authDomain: 'seedvest-5e6c0.firebaseapp.com',
+  databaseURL: 'https://seedvest-5e6c0.firebaseio.com',
+  projectId: 'seedvest-5e6c0',
+  storageBucket: 'seedvest-5e6c0.appspot.com',
+  messagingSenderId: '838314676214',
 };

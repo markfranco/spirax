@@ -6,7 +6,7 @@ import articles from './articles';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, UPDATE_PROFILE,
   REQUEST_OFFERS, RECEIVE_OFFERS, CHECKED_ANSWER,
-  LOGOUT_REQUEST, LOGOUT_SUCCESS,
+  LOGOUT_REQUEST, LOGOUT_SUCCESS, NO_SUBMITTED, SUBMITTED_SUCCESS,
 } from '../constants';
 
 // The auth reducer. The starting state sets authentication
@@ -44,14 +44,26 @@ function auth(state = {
   }
 }
 
-function answer(state = {},
+function answer(state = {
+  money: '',
+  term: '',
+  hasAnswered: false,
+},
   action) {
   switch (action.type) {
     case CHECKED_ANSWER:
       return Object.assign({}, state, {
         money: action.info.money,
         term: action.info.term,
+        hasAnswered: true,
       });
+    case SUBMITTED_SUCCESS:
+      return Object.assign({}, state, {
+        money: action.postData.money,
+        term: action.postData.term,
+        hasAnswered: true,
+      });
+    case NO_SUBMITTED:
     default:
       return state;
   }

@@ -11,7 +11,7 @@ import router from './router';
 import history from './history';
 import AuthService from './utils/authService';
 
-import { lock } from './actions';
+import { lock, updateProfile } from './actions';
 
 const auth = new AuthService();
 const store = configureStore();
@@ -26,6 +26,10 @@ function renderComponent(component) {
 
 lock.on('authenticated', (response) => {
   auth.doAuthentication(response, store);
+});
+
+auth.on('profile_updated', (profile) => {
+  store.dispatch(updateProfile(profile));
 });
 
 // Find and render a web page matching the current URL path,

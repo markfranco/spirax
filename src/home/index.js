@@ -4,17 +4,15 @@ import { connect } from 'react-redux';
 import Layout from '../../components/Layout';
 import sGlobal from '../assets/global.css';
 import s from './styles.css';
-import { title, html } from './index.md';
+import { title } from './index.md';
 import AuthService from '../utils/authService';
-// import Article from '../../components/Articles';
 import Button from '../../components/Button';
-
-import * as actions from '../actions';
+import FindInterestForm from '../../components/FindInterestForm';
 
 const mapStateToProps = (state) => {
   const { auth, offers, answer } = state;
   return { auth, offers, answer };
-};
+};  
 
 const auth = new AuthService();
 
@@ -50,21 +48,6 @@ class HomePage extends React.Component {
       submitted: false,
     };
 
-    // listen to profile_updated events to update internal state
-    auth.on('profile_updated', (profile) => {
-      dispatch(actions.updateProfile(profile));
-    });
-
-    const config = {
-      apiKey: 'AIzaSyCIP3g1UX3ToPJtglboEwY_ZXevi9WTvis',
-      authDomain: 'seedvest-5e6c0.firebaseapp.com',
-      databaseURL: 'https://seedvest-5e6c0.firebaseio.com',
-      projectId: 'seedvest-5e6c0',
-      storageBucket: 'seedvest-5e6c0.appspot.com',
-      messagingSenderId: '838314676214',
-    };
-    window.firebase.initializeApp(config);
-
     if (auth.loggedIn()) {
       auth.setProfile(auth.getProfile(), dispatch);
     }
@@ -74,68 +57,7 @@ class HomePage extends React.Component {
     document.title = title;
   }
 
-  outputUpdate(vol) {
-    document.querySelector('#volume').value = vol;
-  }
-
-  onChangeMoney(event) {
-    document.querySelector('#volume').value = event.target.value;
-    this.setState({
-      money: event.target.value,
-    });
-  }
-
-  onChangeTerm(event) {
-    this.setState({
-      term: event.target.value,
-    });
-  }
-
-  handleSubmit() {
-    const userRef = window.firebase.database().ref(`users/${this.props.auth.user.fb_id}/info`);
-
-    const postData = {
-      term: this.state.term,
-      money: this.state.money,
-      name: this.props.auth.user.name,
-      email: this.props.auth.user.email,
-      updated: new Date().toString(),
-    };
-
-    userRef.transaction((response) => {
-      console.log('This was the response', response);
-      if (response === null) {
-        return postData;
-      } 
-        return;
-    }, (error, committed, snapshot) => {
-      if (error) {
-        console.log('Transaction failed abnormally!', error);
-      } else if (!committed) {
-        console.log('We aborted the transaction.');
-      } else {
-        console.log('This worked YAY!');
-        console.log('committed', committed);
-      }
-      console.log('Data baby! ', snapshot.val());
-      this.setState({ submitted: true });
-    });
-  }
-
-  logout() {
-    this.props.dispatch(actions.userLogout());
-    auth.logout();
-    // Needs to go to the home page
-  }
-
   render() {
-    if (this.state.submitted) {
-      var thankYouMessage = (<div>
-        <h3>Thank you!</h3>
-        <p>You have indicated you would like to invest ${this.state.money} for {this.state.term}</p>
-      </div>);
-    }
-
     return (
       // This should have its own component
       <Layout className={s.content}>
@@ -146,60 +68,20 @@ class HomePage extends React.Component {
               <div className={s.banner}>
                 <h1>Invest in your local farm</h1>
                 <span>Help argiculture in the Philippines</span>
-
                 <div className={s.buttons}>
                   <Button
                     primary accent ripple
                     className={s.register}
                     onClick={() => auth.login()}
                   >
-                    Register
+                    Sign up
                   </Button>
                 </div>
-
               </div>
             }
 
             { this.props.auth.userLoggedIn &&
-              <div>
-                <h3>Welcome {this.props.auth.user.name}</h3>
-                <span>Thank you for registering your interest!</span>
-                <br />
-                <br />
-
-                { this.props.answer.term && this.props.answer.money &&
-                  <h3>
-                    You have indicated you would like to invest ${this.props.answer.money} for {this.props.answer.term}
-                  </h3>
-                }
-
-                {thankYouMessage}
-
-                { this.state.answer && !this.props.answer.term && !this.props.answer.money &&
-                  <div>
-                    <p>How much would you be interesting in investing?</p>
-                    <input
-                      type="range" min="0" max="100000" id="fader" step="5000"
-                      list="volsettings" onChange={e => this.onChangeMoney(e)}
-                    />
-                    <output htmlFor="fader" id="volume">0</output>
-
-                    <br />
-                    <br />
-
-                    <label htmlFor="term">How long would you like to invest for?</label>
-                    <select name="term" value={this.state.termValue} onChange={e => this.onChangeTerm(e)}>
-                      <option value="3 months">3 months</option>
-                      <option value="6 months">6 months</option>
-                      <option value="1 year">1 year</option>
-                      <option value="2 years">2 years</option>
-                    </select>
-
-                    <button onClick={() => this.handleSubmit()}>Submit</button>
-                  </div>
-                }
-
-              </div>
+              <FindInterestForm />
             }
           </div>
         </div>
