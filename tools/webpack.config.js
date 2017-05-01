@@ -146,6 +146,17 @@ const config = {
         ],
       },
       {
+        test: /\.html$/,
+        use: [
+          {
+            loader: 'html-loader',
+            options: {
+              minimize: true,
+            },
+          },
+        ],
+      },
+      {
         test: /\.md$/,
         loader: path.resolve(__dirname, './markdown-loader.js'),
       },

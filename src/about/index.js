@@ -9,9 +9,11 @@
  */
 
 import React from 'react';
+import domPurify from 'dompurify';
 import Layout from '../../components/Layout';
 import s from './styles.css';
-import { title, html } from './index.md';
+import { title } from './index.md';
+import html from './about.html';
 import RequireAuth from '../utils/requireAuth';
 
 class AboutPage extends React.Component {
@@ -26,7 +28,7 @@ class AboutPage extends React.Component {
         <h1>{title}</h1>
         <div
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: domPurify.sanitize(html) }}
         />
       </Layout>
     );

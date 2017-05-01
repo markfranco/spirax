@@ -52,7 +52,7 @@ class Navigation extends React.Component {
         {
           this.props.auth.userLoggedIn &&
           <div>
-            { false && linksForLater }
+            { true && linksForLater }
             <a className={`${s.link}`} onClick={() => this.logout()}>Logout</a>
           </div>
         }

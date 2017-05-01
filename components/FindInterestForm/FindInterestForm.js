@@ -64,8 +64,10 @@ class FindInterestForm extends React.Component {
               type="range" min="0" max="100000" id="fader" step="5000"
               list="volsettings"
               onChange={e => this.onChangeMoney(e)}
+              required
             />
             <output htmlFor="fader" id="volume">0</output>
+            <br />
             <label htmlFor="term">
               How long would you like to invest for?
             </label>
@@ -73,12 +75,14 @@ class FindInterestForm extends React.Component {
               name="term"
               value={this.state.termValue} 
               onChange={e => this.onChangeTerm(e)}
+              required
             >
               <option value="3 months">3 months</option>
               <option value="6 months">6 months</option>
               <option value="1 year">1 year</option>
               <option value="2 years">2 years</option>
             </select>
+            <br />
             <button onClick={() => this.handleSubmit()}>Submit</button>
           </div>
         }

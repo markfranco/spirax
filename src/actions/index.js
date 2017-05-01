@@ -28,8 +28,7 @@ export function checkHasAnswer(fbId) {
           } else {
             dispatch({ type: NO_SUBMITTED });
           }
-        },
-    );
+        });
   };
 }
 
