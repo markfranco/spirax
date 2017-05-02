@@ -1,10 +1,86 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Field, reduxForm } from 'redux-form';
 import * as actions from '../../src/actions';
+import s from './styles.css';
 
 const mapStateToProps = (state) => {
   const { auth, answer } = state;
   return { auth, answer };
+};
+
+const validate = (values) => {
+  const errors = {};
+  if (!values.money) {
+    errors.money = 'Required';
+  } else if (isNaN(Number(values.money))) {
+    errors.money = 'Please enter how much money as a number';
+  }
+
+  if (!values.term) {
+    errors.term = 'Required';
+  } else if (isNaN(Number(values.term))) {
+    errors.money = 'Please enter how many months';
+  }
+  return errors;
+};
+
+const renderField = ({ input, label, type, className, meta: { touched, error, warning } }) => (
+  <div>
+    <label>{label}</label>
+    <div className={className}>
+      <input {...input} type={type} />
+      {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
+    </div>
+  </div>
+);
+
+let SyncValidationForm = (props) => {
+
+  const { dispatch, handleSubmit, pristine, reset, submitting } = props;
+
+  // Implement these in the future
+  function formatMoney(money) {
+    return money.lastIndexOf('P', 0) === 0 ? money : `P${money}`;
+  }
+
+  function formatTerm(term) {
+    // this needs fixing
+    // term = term.replace(/[^\d.-]/g, '');
+    console.log('term', term);
+    const suffix = term === 1 ? 'month' : 'months';
+    return `${term} ${suffix}`;
+  }
+
+  function onFocusMoney(money) {
+    console.log('money', money);
+    return money.replace(/[^\d.-]/g, '');
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className={s.formGroup}>
+      <Field
+        name="money"
+        className={s.field}
+        type="text"
+        // format={value => formatMoney(value)}
+        // onFocus={v => onFocusMoney(v.target.value)}
+        component={renderField}
+        label="How much money would you like to invest?"
+      />
+      <Field
+        name="term"
+        className={s.field}
+        type="text"
+        // format={value => formatTerm(value)}
+        component={renderField}
+        label="How many months would you like to invest for?"
+      />
+      <div>
+        <button type="submit" disabled={submitting}>Submit</button>
+      </div>
+    </form>
+  );
 };
 
 class FindInterestForm extends React.Component {
@@ -51,14 +127,14 @@ class FindInterestForm extends React.Component {
     }
 
     return (
-      <div>
+      <div className={s.welcome}>
         <h3>Welcome {name}</h3>
         <span>Thank you for registering your interest!</span>
 
         {thankYouMessage}
 
         { !hasAnswered &&
-          <div>
+          <div className={s.formGroup}>
             <p>How much would you be interesting in investing?</p>
             <input
               type="range" min="0" max="100000" id="fader" step="5000"
@@ -92,4 +168,23 @@ class FindInterestForm extends React.Component {
 
 }
 
-export default connect(mapStateToProps)(FindInterestForm);
+// export default connect(mapStateToProps)(FindInterestForm);
+// export default reduxForm({
+//   form: 'enquiryForm',
+//   validate,
+//   // warn Note: could have warning if we like
+// })(SyncValidationForm);
+
+SyncValidationForm = reduxForm({
+  form: 'enquiryForm',
+  enableReinitialize: true,
+  validate,
+})(SyncValidationForm);
+
+SyncValidationForm = connect(
+  props => ({
+    initialValues: props.answer,
+  }),
+)(SyncValidationForm);
+
+export default SyncValidationForm;

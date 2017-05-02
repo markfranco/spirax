@@ -4,7 +4,8 @@ import Auth0Lock from 'auth0-lock';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, RECEIVE_ARTICLES, CHECKED_ANSWER,
   UPDATE_PROFILE, REQUEST_OFFERS, RECEIVE_OFFERS, REQUEST_ARTICLES,
-  LOGOUT_REQUEST, LOGOUT_SUCCESS, NO_SUBMITTED, SUBMITTED_SUCCESS } from '../constants';
+  LOGOUT_REQUEST, LOGOUT_SUCCESS, NO_SUBMITTED, SUBMITTED_SUCCESS,
+  UPDATED_ANSWER } from '../constants';
 
 export const lock = new Auth0Lock('PZRNubBes13c3ZlKIt700T7Cn2zdsHM7', 'markfranco.au.auth0.com', {
   auth: {
@@ -36,10 +37,18 @@ export function submitAnswer(postData, fbId) {
   return (dispatch) => {
     const userRef = window.firebase.database().ref(`users/${fbId}/info`);
 
+    function updateAnswer() {
+      userRef.update(postData, () => {
+        dispatch({ type: UPDATED_ANSWER, postData });
+      });
+    }
+
     userRef.transaction((response) => {
-      return response === null ? postData : '';
+      return response === null ? postData : updateAnswer();
     }, (error, committed) => {
-      if (error) console.error('Transaction failed abnormally!', error); 
+      // if (error) console.error('Transaction failed abnormally!', error);
+      // Might move over to AWS Dynamo DB
+      if (error) console.log('Did not commit, may have updated!');
       else if (!committed) console.warn('We aborted the transaction.');
       else dispatch({ type: SUBMITTED_SUCCESS, postData });
     });

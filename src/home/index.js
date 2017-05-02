@@ -4,10 +4,11 @@ import { connect } from 'react-redux';
 import Layout from '../../components/Layout';
 import sGlobal from '../assets/global.css';
 import s from './styles.css';
-import { title } from './index.md';
 import AuthService from '../utils/authService';
 import Button from '../../components/Button';
+// import FindInterestForm from '../../components/FindInterestForm';
 import FindInterestForm from '../../components/FindInterestForm';
+import * as actions from '../actions';
 
 const mapStateToProps = (state) => {
   const { auth, offers, answer } = state;
@@ -53,8 +54,15 @@ class HomePage extends React.Component {
     }
   }
 
-  componentDidMount() {
-    document.title = title;
+  handleSubmit(values) {
+    const { dispatch,
+      auth: { user: { name, email, fb_id } },
+      // answer: { hasAnswered }
+    } = this.props;
+    const { term, money } = values;
+    const postData = { term, money, name, email, updated: new Date().toString() };
+
+    dispatch(actions.submitAnswer(postData, fb_id));
   }
 
   render() {
@@ -81,7 +89,7 @@ class HomePage extends React.Component {
             }
 
             { this.props.auth.userLoggedIn &&
-              <FindInterestForm />
+              <FindInterestForm onSubmit={(values) => { this.handleSubmit(values); }} />
             }
           </div>
         </div>

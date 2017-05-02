@@ -43,18 +43,12 @@ class Navigation extends React.Component {
   }
 
   render() {
-    let linksForLater = (<div>
-      <Link className={`${s.link}`} to="/about">About</Link>
-      <Link className={`${s.link}`} to="/profile">Profile</Link>
-    </div>)
     return (
       <nav className="mdl-navigation" ref={node => (this.root = node)}>
+        <Link className={`${s.link}`} to="/about">About</Link>
         {
           this.props.auth.userLoggedIn &&
-          <div>
-            { true && linksForLater }
-            <a className={`${s.link}`} onClick={() => this.logout()}>Logout</a>
-          </div>
+          <a className={`${s.link}`} onClick={() => this.logout()}>Logout</a>
         }
         {
           !this.props.auth.userLoggedIn &&

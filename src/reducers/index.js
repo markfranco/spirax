@@ -1,11 +1,12 @@
 // import runtime from './runtime';
 
 import { combineReducers } from 'redux';
+import { reducer as form } from 'redux-form';
 
 import articles from './articles';
 import {
   USER_LOGIN, USER_LOGOUT, CHECK_AUTH, UPDATE_PROFILE,
-  REQUEST_OFFERS, RECEIVE_OFFERS, CHECKED_ANSWER,
+  REQUEST_OFFERS, RECEIVE_OFFERS, CHECKED_ANSWER, UPDATED_ANSWER,
   LOGOUT_REQUEST, LOGOUT_SUCCESS, NO_SUBMITTED, SUBMITTED_SUCCESS,
 } from '../constants';
 
@@ -57,6 +58,7 @@ function answer(state = {
         term: action.info.term,
         hasAnswered: true,
       });
+    case UPDATED_ANSWER:
     case SUBMITTED_SUCCESS:
       return Object.assign({}, state, {
         money: action.postData.money,
@@ -94,6 +96,7 @@ const rootReducer = combineReducers({
   offers,
   articles,
   answer,
+  form,
 });
 
 export default rootReducer;

@@ -13,6 +13,7 @@
   /*max-width: 1000px;*/
   width: 100%;
   flex: 1;
+  background-image: url(../../src/assets/images/bg.jpg);
 
   /*position: relative;
   top: 0;
@@ -28,8 +29,9 @@
 .link {
   display: inline-block;
   color: #fff;
-  line-height: 64px;
-  padding: 0 24px;
+  /*line-height: 64px;*/
+  /*padding: 0 24px;*/
+  margin-left: 20px;
   text-decoration: none;
   &:hover {
     cursor: pointer;
